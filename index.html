@@ -1,0 +1,171 @@
+<html>
+   <head>
+      <script src="https://code.jquery.com/jquery-3.1.0.js" integrity="sha256-slogkvB1K3VOkzAI8QITxV3VzpOnkeNVsKvtkYLMjfk=" crossorigin="anonymous"></script>
+      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+      <link rel="stylesheet" type="text/css" href="./css/style.css">
+      <script src ='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
+   </head>
+<body>
+
+<script> 
+   var db = new Firebase("https://nve-database-default-rtdb.firebaseio.com/");
+   function saveData() {
+       event.preventDefault()
+       $("h3").show();
+       $("h3").fadeOut(1000);
+   	var data = db.child("nve-database-default-rtdb");	
+   	data.set({
+      email:$("#femail").val(),
+      name: $("#fname").val(),
+   		quantity: $("#quantity").val(),
+   		shirt: $("#shirt").val(),
+   		size: $("#size").val()
+   	});
+   }
+
+   var url = "https://nve-database-default-rtdb.firebaseio.com/"
+    https.get(url, function(res) {
+      context.succeed();
+      console.log(res);
+      context.done(null, '!');
+    }).on('error', function(e) {
+      console.log("Got error: " + e.message);
+      context.done(null, '');
+    });   
+</script>
+
+<script>
+var quantity = 
+  {S:0, M:0, L:0};
+  var curSize = ""; 
+
+  function fillNext(selection) {
+    switch(selection) {
+    
+    case "Shirt1":
+    quantity.S = 10; 
+    quantity.M = 5; 
+    quantity.L = 1; 
+    break;
+    case "Shirt2":
+    quantity.S = 3; 
+    quantity.M = 2; 
+    quantity.L = 5; 
+    break;
+    case "Shirt3":
+    quantity.S = 1; 
+    quantity.M = 3; 
+    quantity.L = 2; 
+
+    break;
+    default:
+    quantity.S = 0; 
+    quantity.M = 0; 
+    quantity.L = 0; 
+    }
+  }
+
+function checkupdate() {
+  fillNext($("#shirt").val());
+  $(".third > option").each(function() {
+      if (this.value > quantity[curSize]) {
+      this.disabled = true; 
+      } else {
+      this.disabled = false; 
+      }
+    });
+}
+
+
+$( document ).ready(function() {
+$(".first").change(function(){
+
+fillNext($("#shirt").val()); 
+checkupdate(); 
+
+if($(this).val() !== ""){
+  $(".second").prop("disabled",false);
+} else{
+  $(".second").prop("disabled",true);
+  }
+});
+$(".second").change(function(){
+if($(this).val() !== ""){
+  $(".third").prop("disabled",false);
+}
+else{
+  $(".third").prop("disabled",true);
+}
+curSize = $("#size").val();
+  $(".third > option").each(function() {
+      if (this.value > quantity[curSize]) {
+      this.disabled = true; 
+      } else {
+      this.disabled = false; 
+      }
+    });
+  });
+});
+</script>
+
+
+
+<div class="container">
+<div class="col-sm-10 col-sm-offset-1">
+<div class="row">
+<h1> Super basic form</h1>
+<p> talks to database at: https://nve-database-default-rtdb.firebaseio.com/. There is no input validation, meaning you can submit anything or nothing for your email and name. Input interactivly grey out based on  user selection.  If I wanted to secure this, I could disalow firebase read and write unless the user was authenticated, this can be set within firebase. To do this I could include identifying info about me(the form owner) and an ID for the form with form submission. To prevent the form being interupted in transitt, the form data could be encrypted at the point of submition</p>
+<form id="order-form">
+<div class="form-group">
+    <label for="fname">Name</label><br>
+    <input type="text" id="fname" name="fname" value="name"><br>
+    </div>
+
+    <div class="form-group">
+    <label for="femail">Email</label><br>
+    <input type="text" id="femail" name="femail" value="email"><br>
+    </div>
+
+      <div class="form-group">
+      <label for="shirt">Shirt Selection</label>
+      <select class="first form-control" id="shirt">
+        <option>Shirt Type</option>
+        <option>Shirt1</option>
+        <option>Shirt2</option>
+        <option>Shirt3</option>
+      </select>
+
+      </div>
+      <div class="form-group">
+      <label for="size">Shirt Size</label>
+        <select class="second form-control" id="size" disabled>
+          <option disabled="disabled">10x10</option>
+          <option>size</option>
+          <option>S</option>
+          <option>M</option>
+          <option>L</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+      <label for="quantity">Shirt Quantitiy</label>
+        <select class="third form-control" id="quantity" disabled>
+          <option>1</option>
+          <option>2</option>
+          <option>3</option>
+          <option>4</option>
+          <option>5</option>
+          <option>6</option>
+          <option>7</option>
+          <option>9</option>
+          <option>10</option>
+        </select>
+      </div>
+      <button onclick=saveData() type="submit" id="submit" class="btn btn-primary btn-lg">Submit</button></center>
+      </form>							
+      </div>	
+  </div>
+  <center> <h3 id=saved  style="display:none"> Your preferences have been saved! </h3> </center>
+
+  </body>
+</html>
